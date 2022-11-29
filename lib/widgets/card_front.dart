@@ -8,6 +8,8 @@ class CardFrontView extends StatelessWidget {
   String? _formattedCardNumber;
   String? _formattedExpiryDate;
 
+  ///
+
   CardFrontView(
       {Key? key, this.cardNumber, this.cardHolderName, this.cardExpiry})
       : super(key: key) {
@@ -45,13 +47,16 @@ class CardFrontView extends StatelessWidget {
               Text(
                 _formattedCardNumber!,
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: 20,
                   fontFamily: 'Roboto',
                   letterSpacing: 2,
                   wordSpacing: 2,
                   fontWeight: FontWeight.w500,
                   shadows: [
-                    Shadow(color: Colors.black12, offset: Offset(2, 1))
+                    Shadow(
+                      color: Colors.black12,
+                      offset: Offset(2, 1),
+                    )
                   ],
                 ),
               ),

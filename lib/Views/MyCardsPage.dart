@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:carddemo/widgets/card_back.dart';
 import 'package:carddemo/widgets/card_front.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class MyCardsPage extends StatefulWidget {
   @override
@@ -102,11 +103,22 @@ class _MyCardsPageState extends State<MyCardsPage>
                 child: SingleChildScrollView(
                   child: Column(
                     children: <Widget>[
-                      TextField(
+                      TextFormField(
                         controller: _cardNumberController,
-                        maxLength: 16,
+                        inputFormatters: [
+                          FilteringTextInputFormatter
+                              .digitsOnly, // allow only  digits
+                          CreditCardNumberFormater(), // custom class to format entered data from textField
+                          LengthLimitingTextInputFormatter(
+                              19) // restrict user to enter max 16 characters
+                        ],
+                        keyboardType: TextInputType.number,
                         decoration: InputDecoration(
-                          hintText: 'Card Number',
+                          hintText: "Enter Credit Card Number",
+                          prefixIcon: Padding(
+                            padding: EdgeInsets.only(right: 8.0),
+                            child: Icon(Icons.credit_card),
+                          ),
                         ),
                       ),
                       TextField(
@@ -144,5 +156,32 @@ class _MyCardsPageState extends State<MyCardsPage>
         ),
       ),
     );
+  }
+}
+
+class CreditCardNumberFormater extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    if (newValue.selection.baseOffset == 0) {
+      return newValue;
+    }
+    String enteredData = newValue.text; // get data enter by used in textField
+    StringBuffer buffer = StringBuffer();
+    for (int i = 0; i < enteredData.length; i++) {
+      // add each character into String buffer
+      buffer.write(enteredData[i]);
+      int index = i + 1;
+      if (index % 4 == 0 && enteredData.length != index) {
+        // add space after 4th digit
+        buffer.write(" ");
+      }
+    }
+
+    return TextEditingValue(
+        text: buffer.toString(), // final generated credit card number
+        selection: TextSelection.collapsed(
+            offset: buffer.toString().length) // keep the cursor at end
+        );
   }
 }
